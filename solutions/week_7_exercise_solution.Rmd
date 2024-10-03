@@ -1,0 +1,113 @@
+---
+title: "week_7_excercises_data"
+author: "J.Blondeau"
+date: "2024-10-03"
+output: html_document
+---
+
+```{r setup, echo=FALSE}
+knitr::opts_chunk$set(echo = FALSE,
+                      warning = FALSE,
+                      message = FALSE)
+options(width = 750)
+```
+
+Load the fish data
+```{r}
+library(tidyverse)
+sttstj_fish <- read_csv("../data/sttstj_fish_biomass.csv")
+```
+
+1. Create a line graph of biomass over time for Red hind ("EPI GUTT") inside the national park.
+
+```{r}
+sttstj_fish %>%
+  filter(SPECIES_CD == "EPI GUTT", protected_status == 1) %>%
+  ggplot(aes(x = YEAR, y = biomass, group = SPECIES_CD)) +
+  theme_Publication() +
+  geom_line() +
+  labs(title = "Red Hind biomass over time inside VI National Park",
+       x = "Year",
+       y = "Biomass")
+```
+
+
+2. Create a point and line graph of biomass over time for Yellowtail Snapper ("OCY CHRY") outside the national park.
+
+```{r}
+sttstj_fish %>%
+  filter(SPECIES_CD == "OCY CHRY", protected_status == 0) %>%
+  ggplot(aes(x = YEAR, y = biomass, group = SPECIES_CD)) +
+  geom_point() +
+  geom_line() +
+  labs(title = "Yellowtail Snapper biomass over time outside VI National Park",
+       x = "Year",
+       y = "Biomass")
+
+```
+
+
+3. Create a bar graph of biomass over time for all the parrotfish combined grouped by protected_status.  Edit the the axis and legend titles to be more insightful.
+    - biomass units
+    - 0 = Open, 1 = VI National Park
+    
+```{r}
+sttstj_fish %>%
+  filter(trophic == "parrotfish") %>% 
+  group_by(YEAR, protected_status) %>%
+  summarise(biomass = sum(biomass)) %>%
+  ggplot(aes(x = YEAR, y = biomass, fill = factor(protected_status))) +
+  geom_bar(stat = "identity", position = "dodge") +
+  labs(title = "Parrotfish biomass",
+       x = "Year",
+       y = "Biomass (kg/177m2)") +
+  scale_fill_manual(values = c("0" = "red", "1" = "blue"),
+                    name = element_blank(),
+                    labels = c("Outside", "Inside"))+
+  scale_x_continuous(breaks = c(2017, 2019, 2021, 2023)) +
+  scale_y_continuous(expand = c(0, 0))
+```
+
+    
+4. Create a bar graph of trophic-level mean biomass inside and outside VI national park.
+
+```{r}
+sttstj_fish %>% 
+  group_by(YEAR, trophic, protected_status) %>% 
+  summarise(tot_bio = sum(biomass)) %>% 
+  group_by(trophic, protected_status) %>% 
+  summarise(mean_bio = mean(tot_bio)) %>%
+  ggplot(aes(x = trophic, y = mean_bio, fill = factor(protected_status))) +
+  geom_bar(stat = "identity", position = "dodge") +
+  labs(title = "Mean biomass by trophic level",
+       x = "Trophic level",
+       y = "Mean biomass (kg/177m2)") +
+  scale_fill_manual(values = c("0" = "red", "1" = "blue"),
+                    name = element_blank(),
+                    labels = c("Outside", "Inside")) +
+  scale_y_continuous(expand = c(0, 0))
+
+```
+
+
+5. Create a point and line plot of 'grouper' biomass (+- SE) over time; inside and outside park together.
+
+```{r}
+sttstj_fish %>%
+  group_by(YEAR, protected_status, trophic) %>%
+  summarise(tot_bio = sum(biomass), SE = sum(SE)) %>%
+  filter(trophic == "grouper") %>%
+  ggplot(aes(x = YEAR, y = tot_bio, group = protected_status, color = factor(protected_status))) +
+  geom_errorbar(aes(ymin = tot_bio - SE, ymax = tot_bio + SE), width = 0.1) +
+  geom_point() +
+  geom_line() +
+  theme_minimal() +
+  labs(title = "Grouper biomass over time",
+       x = "Year",
+       y = "Biomass (kg/177m2)") +
+  scale_color_manual(values = c("0" = "red", "1" = "blue"),
+                     name = element_blank(),
+                     labels = c("Outside", "Inside")) +
+  scale_x_continuous(breaks = c(2017, 2019, 2021, 2023))
+```
+
