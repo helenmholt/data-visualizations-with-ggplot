@@ -1,7 +1,7 @@
 ---
-title: "week_7_excercises_data"
+title: "Data Visualizations with ggplot"
 author: "J.Blondeau"
-date: "2024-10-03"
+date: "2027-07-27"
 output: html_document
 ---
 
