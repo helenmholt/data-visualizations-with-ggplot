@@ -24,7 +24,6 @@ sttstj_fish <- read_csv("../data/sttstj_fish_biomass.csv")
 sttstj_fish %>%
   filter(SPECIES_CD == "EPI GUTT", protected_status == 1) %>%
   ggplot(aes(x = YEAR, y = biomass, group = SPECIES_CD)) +
-  theme_Publication() +
   geom_line() +
   labs(title = "Red Hind biomass over time inside VI National Park",
        x = "Year",

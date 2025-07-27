@@ -1,0 +1,406 @@
+---
+title: "Data Wrangling and Visualization in R"
+subtitle: "Data Visualization with ggplot2"
+author: "MMES Fall 2025"
+format: 
+  revealjs:
+    theme: simple
+    slide-number: true
+    chalkboard: true
+---
+
+## The Grammar of Graphics
+
+`ggplot2` is based on the "grammar of graphics," a system for building plots layer by layer.
+
+Every `ggplot2` plot has three essential components: 1. **Data**: The data frame. 2. **Aesthetic Mappings**: How variables map to visual properties (`aes()`). 3. **Geometric Objects (Geoms)**: The points, lines, or bars that represent the data.
+
+------------------------------------------------------------------------
+
+## Today's Agenda
+
+We will build a plot from the ground up, one layer at a time, covering:
+
+-   The plot canvas (`ggplot`, `aes`)
+-   Geometric objects (`geoms`)
+-   Aesthetic mappings (`color`, `fill`)
+-   Labels (`labs`)
+-   Faceting (`facet_wrap`)
+-   Themes (`theme_bw`)
+-   Saving plots (`ggsave`)
+
+------------------------------------------------------------------------
+
+## Setup: Data and Packages
+
+This chunk loads the necessary packages and creates the `coral_plot_data` data frame that we will use for all examples in this presentation.
+
+```{r setup, echo=TRUE, eval=TRUE}
+library(tidyverse)
+library(DT)
+
+# Sample data for plotting
+coral_plot_data <- tibble(
+  species = rep(c("A. palmata", "O. faveolata"), each = 2),
+  site = rep(c("Reef Bay", "Lameshur Bay"), 2),
+  mean_cover = c(25, 18, 15, 22),
+  se = c(3.4, 2.9, 2.1, 3.1)
+)
+```
+
+## Setup: Data and Packages
+
+**Output**
+
+```{r, echo=FALSE, eval=TRUE}
+datatable(coral_plot_data, options = list(dom = 't'))
+```
+
+
+------------------------------------------------------------------------
+
+## Step 1: The Canvas
+
+Start with `ggplot()` to define the data and `aes()` to map variables to the x and y axes. This creates an empty plot canvas.
+
+::::: columns
+::: {.column .smaller width="60%"}
+**Code**
+
+```{r, echo=TRUE, eval=FALSE}
+ggplot(data = coral_plot_data, 
+       mapping = aes(x = species, 
+                     y = mean_cover))
+```
+:::
+
+::: {.column width="40%"}
+**Output**
+
+```{r, echo=FALSE, eval=TRUE}
+ggplot(data = coral_plot_data, 
+       mapping = aes(x = species, y = mean_cover))
+```
+:::
+:::::
+
+------------------------------------------------------------------------
+
+## Step 2: Add a Geom
+
+Add a geometric object (`geom`) as a new layer using `+`. Here, `geom_point()` represents the data as points.
+
+::::: columns
+::: {.column .smaller width="60%"}
+**Code**
+
+```{r, echo=TRUE, eval=FALSE}
+ggplot(data = coral_plot_data, 
+       mapping = aes(x = species,
+                     y = mean_cover)) +
+  geom_point()
+```
+:::
+
+::: {.column width="40%"}
+**Output**
+
+```{r, echo=FALSE, eval=TRUE}
+ggplot(data = coral_plot_data, 
+       mapping = aes(x = species, y = mean_cover)) +
+  geom_point()
+```
+:::
+:::::
+
+------------------------------------------------------------------------
+
+## Common Geoms
+
+-   `geom_point()`: Scatter plots.
+-   `geom_col()`: Bar charts.
+-   `geom_line()`: Line graphs.
+-   `geom_histogram()`: Distributions.
+-   `geom_boxplot()`: Box-and-whisker plots.
+-   `geom_errorbar()`: Error bars.
+
+------------------------------------------------------------------------
+
+## Step 3: Map an Aesthetic
+
+Map another variable, like `site`, to an aesthetic, like `color`, to add more information to the plot.
+
+::::: columns
+::: {.column .smaller width="60%"}
+**Code**
+
+```{r, echo=TRUE, eval=FALSE}
+ggplot(data = coral_plot_data, 
+       mapping = aes(x = species, 
+                     y = mean_cover, 
+                     color = site)) +
+  geom_point(size = 4)
+```
+:::
+
+::: {.column width="40%"}
+**Output**
+
+```{r, echo=FALSE, eval=TRUE}
+ggplot(data = coral_plot_data, 
+       mapping = aes(x = species, y = mean_cover, color = site)) +
+  geom_point(size = 4)
+```
+:::
+:::::
+
+------------------------------------------------------------------------
+
+## Step 4: Add Error Bars
+
+Add another layer with `geom_errorbar()`, mapping `ymin` and `ymax` to define the start and end of the bars.
+
+::::: columns
+::: {.column .smaller width="60%"}
+**Code**
+
+```{r, echo=TRUE, eval=FALSE}
+ggplot(data = coral_plot_data, 
+       mapping = aes(x = species, 
+                     y = mean_cover, 
+                     color = site)) +
+  geom_point(size = 4) +
+  geom_errorbar(aes(ymin = mean_cover - se, 
+                    ymax = mean_cover + se), 
+                width = 0.1)
+```
+:::
+
+::: {.column width="40%"}
+**Output**
+
+```{r, echo=FALSE, eval=TRUE}
+ggplot(data = coral_plot_data, 
+       mapping = aes(x = species, y = mean_cover, color = site)) +
+  geom_point(size = 4) +
+  geom_errorbar(
+    aes(ymin = mean_cover - se, ymax = mean_cover + se),
+    width = 0.1
+  )
+```
+:::
+:::::
+
+------------------------------------------------------------------------
+
+## Step 5: Dodge Geoms
+
+Use `position_dodge()` to shift overlapping geoms side-by-side, preventing them from plotting on top of each other.
+
+::::: columns
+::: {.column .smaller width="60%"}
+**Code**
+
+```{r, echo=TRUE, eval=FALSE}
+dodge <- position_dodge(width = 0.2)
+
+ggplot(data = coral_plot_data, 
+       mapping = aes(x = species, 
+                     y = mean_cover, 
+                     color = site)) +
+  geom_point(size = 4, position = dodge) +
+  geom_errorbar(aes(ymin = mean_cover - se, 
+                    ymax = mean_cover + se),
+                width = 0.1, position = dodge)
+```
+:::
+
+::: {.column width="40%"}
+**Output**
+
+```{r, echo=FALSE, eval=TRUE}
+dodge <- position_dodge(width = 0.2)
+ggplot(data = coral_plot_data, 
+       mapping = aes(x = species, y = mean_cover, color = site)) +
+  geom_point(size = 4, position = dodge) +
+  geom_errorbar(
+    aes(ymin = mean_cover - se, ymax = mean_cover + se),
+    width = 0.1,
+    position = dodge
+  )
+```
+:::
+:::::
+
+------------------------------------------------------------------------
+
+## Step 6: Customize Labels
+
+Use `labs()` to change the titles for the axes, legend, and the plot itself.
+
+::::: columns
+::: {.column .smaller width="60%"}
+**Code**
+
+```{r, echo=TRUE, eval=FALSE}
+dodge <- position_dodge(width = 0.2)
+
+ggplot(data = coral_plot_data, 
+       mapping = aes(x = species, 
+                     y = mean_cover, 
+                     color = site)) +
+  geom_point(size = 4, position = dodge) +
+  geom_errorbar(aes(ymin = mean_cover - se, 
+                    ymax = mean_cover + se),
+                width = 0.1, position = dodge) +
+  labs(title = "Mean Coral Cover",
+       x = "Coral Species", 
+       y = "Mean Percent Cover",
+       color = "Survey Site")
+```
+:::
+
+::: {.column width="40%"}
+**Output**
+
+```{r, echo=FALSE, eval=TRUE}
+dodge <- position_dodge(width = 0.2)
+ggplot(data = coral_plot_data, 
+       mapping = aes(x = species, y = mean_cover, color = site)) +
+  geom_point(size = 4, position = dodge) +
+  geom_errorbar(
+    aes(ymin = mean_cover - se, ymax = mean_cover + se),
+    width = 0.1,
+    position = dodge
+  ) +
+  labs(
+    title = "Mean Coral Cover by Species and Site",
+    x = "Coral Species",
+    y = "Mean Percent Cover",
+    color = "Survey Site"
+  )
+```
+:::
+:::::
+
+------------------------------------------------------------------------
+
+## Step 7: Facet the Plot
+
+Use `facet_wrap()` to create a grid of plots (small multiples) based on a categorical variable.
+
+::::: columns
+::: {.column .smaller width="60%"}
+**Code**
+
+```{r, echo=TRUE, eval=FALSE}
+ggplot(data = coral_plot_data, 
+       mapping = aes(x = species, 
+                     y = mean_cover)) +
+  geom_col(aes(fill = species), 
+           show.legend = FALSE) +
+  geom_errorbar(aes(ymin = mean_cover - se, 
+                    ymax = mean_cover + se), 
+                width = 0.2) +
+  facet_wrap(~ site) +
+  labs(title = "Mean Coral Cover",
+       x = "Coral Species", 
+       y = "Mean Percent Cover")
+```
+:::
+
+::: {.column width="40%"}
+**Output**
+
+```{r, echo=FALSE, eval=TRUE}
+ggplot(data = coral_plot_data, 
+       mapping = aes(x = species, 
+                     y = mean_cover)) +
+  geom_col(aes(fill = species), 
+           show.legend = FALSE) +
+  geom_errorbar(
+    aes(ymin = mean_cover - se, ymax = mean_cover + se),
+    width = 0.2
+  ) +
+  facet_wrap(~ site) +
+  labs(
+    title = "Mean Coral Cover by Species and Site",
+    x = "Coral Species",
+    y = "Mean Percent Cover"
+  )
+```
+:::
+:::::
+
+------------------------------------------------------------------------
+
+## Step 8: Apply a Theme
+
+Use a built-in theme like `theme_bw()` to change the overall look and feel of the plot (e.g., background, grid lines).
+
+::::: columns
+::: {.column .smaller width="60%"}
+**Code**
+
+```{r, echo=TRUE, eval=FALSE}
+ggplot(data = coral_plot_data, 
+       mapping = aes(x = species, 
+                     y = mean_cover)) +
+  geom_col(aes(fill = species), 
+           show.legend = FALSE) +
+  geom_errorbar(aes(ymin = mean_cover - se, 
+                    ymax = mean_cover + se),
+                width = 0.2) +
+  facet_wrap(~ site) +
+  labs(title = "Mean Coral Cover",
+       x = "Coral Species", 
+       y = "Mean Percent Cover") +
+  theme_bw()
+```
+:::
+
+::: {.column width="40%"}
+**Output**
+
+```{r, echo=FALSE, eval=TRUE}
+ggplot(data = coral_plot_data, 
+       mapping = aes(x = species, y = mean_cover)) +
+  geom_col(aes(fill = species), show.legend = FALSE) +
+  geom_errorbar(
+    aes(ymin = mean_cover - se, ymax = mean_cover + se),
+    width = 0.2
+  ) +
+  facet_wrap(~ site) +
+  labs(
+    title = "Mean Coral Cover by Species and Site",
+    x = "Coral Species",
+    y = "Mean Percent Cover"
+  ) +
+  theme_bw()
+```
+:::
+:::::
+
+------------------------------------------------------------------------
+
+## Step 9: Save the Plot
+
+Assign the plot to a variable, then use `ggsave()` to save it to a file.
+
+```{r, echo=TRUE, eval=FALSE}
+# 1. Assign the final plot to a variable
+my_final_plot <- ggplot(data = coral_plot_data, 
+       mapping = aes(x = species, y = mean_cover)) +
+  geom_col(aes(fill = species), show.legend = FALSE) +
+  geom_errorbar(aes(ymin = mean_cover - se, 
+                    ymax = mean_cover + se), width = 0.2) +
+  facet_wrap(~ site) +
+  labs(title = "Mean Coral Cover",
+       x = "Coral Species", y = "Mean Percent Cover") +
+  theme_bw()
+
+# 2. Save the plot to a file
+ggsave("coral_cover_plot.png", 
+       plot = my_final_plot, 
+       width = 8, height = 5)
+```
