@@ -1,7 +1,7 @@
 ---
 title: "Data Visualizations with ggplot"
-author: "J.Blondeau"
-date: "2027-07-27"
+author: "H.Holt"
+date: "2027-09-26"
 output: html_document
 ---
 
@@ -9,28 +9,57 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+This week is all about making plots and graphs in ggplot2. The only datasets you need are in the /data directory.
 
-This week is all about making plots and graphs in ggplot2.  The only datasets you need are in the /data directory.
+1)  sttstj_fish_biomass
+2)  taxonomic
 
-1) sttstj_fish_biomass
-2) taxonomic
+```{r}
+#load libraries
+library(tidyverse)
 
+#import data
+biomass_fish <- read_csv("data/sttstj_fish_biomass.csv")
 
-Inspect the sttstj_fish_biomass dataset.  It is 3 years of biomass (kg/177m2) data for 9 fish species inside the VI national park (prot = 1) and outside the national park (prot = 0). 
+taxo <- read_csv("data/taxonomic.csv")
+```
 
-In this instance, anytime you need to group by and summarize, you can just take the mean of biomass and SE.  This would not always be appropriate, but for this case the exercises are for plotting and graphing.
+Inspect the sttstj_fish_biomass dataset. It is 3 years of biomass (kg/177m2) data for 9 fish species inside the VI national park (prot = 1) and outside the national park (prot = 0).
 
-**put all your code in the .Rmd file inside a code chunk for each question.  Annotate what you are doing so that you can reference them later.
+In this instance, anytime you need to group by and summarize, you can just take the mean of biomass and SE. This would not always be appropriate, but for this case the exercises are for plotting and graphing.
 
-1. Create a line graph of biomass over time for Red hind ("EPI GUTT") inside the national park.
+\*\*put all your code in the .Rmd file inside a code chunk for each question. Annotate what you are doing so that you can reference them later.
 
-2. Create a point and line graph of biomass over time for Yellowtail Snapper ("OCY CHRY") outside the national park.
+1.  Create a line graph of biomass over time for Red hind ("EPI GUTT") inside the national park.
 
-3. Create a bar graph of biomass over time for each species grouped by protected_status.  Edit the the axis and legend titles to be more insightful.
-    - biomass units
-    - Scientific name instead of SPECIES_CD
-    - 0 = Open, 1 = VI National Park
-    
-4. Create a bar graph of trophic-level mean biomass inside and outside VI national park for each species.
+```{r}
 
-5. Create a point and line plot of 'grouper' biomass (+- SE) over time; inside and outside park together.
+```
+
+2.  Create a point and line graph of biomass over time for Yellowtail Snapper ("OCY CHRY") outside the national park.
+
+```{r}
+
+```
+
+3.  Create a bar graph of biomass over time for each species grouped by protected_status. Edit the the axis and legend titles to be more insightful.
+
+    -   biomass units
+    -   Scientific name instead of SPECIES_CD
+    -   0 = Open, 1 = VI National Park
+
+    ```{r}
+
+    ```
+
+4.  Create a bar graph of trophic-level mean biomass inside and outside VI national park for each species.
+
+```{r}
+
+```
+
+5.  Create a point and line plot of 'grouper' biomass (+- SE) over time; inside and outside park together.
+
+```{r}
+
+```
