@@ -23,7 +23,9 @@ redhind_biomass_NP <- biomass_species %>%
   select(YEAR, biomass, SE, protected_status, COMNAME.x)
 
 #graph bby
-######come back to later 
+ggplot (data = redhind_biomass_NP, 
+        aes(x = YEAR, y = biomass)) + 
+  geom_line(color = "red", linetype = 1)
 
 #2) create a point and line graph of Yellowtail Snapper ("OCY CHRY") outside the national park
 
